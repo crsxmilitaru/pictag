@@ -9,14 +9,14 @@
 <p align="center">
   <a href="https://github.com/crsxmilitaru/pictag"><img src="https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=white" alt="GitHub"></a>
   <a href="https://github.com/crsxmilitaru/pictag/stargazers"><img src="https://img.shields.io/github/stars/crsxmilitaru/pictag?logo=github" alt="GitHub Stars"></a>
-  <a href="https://github.com/crsxmilitaru/pictag/blob/main/LICENSE"><img src="https://img.shields.io/github/license/crsxmilitaru/pictag?style=flat" alt="License"></a>
+  <a href="https://github.com/crsxmilitaru/pictag/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-ISC-blue" alt="License"></a>
   <a href="https://www.paypal.com/donate?hosted_button_id=MZQS5CZ68NGEW"><img src="https://img.shields.io/badge/Donate-PayPal-00457C?logo=paypal&logoColor=white" alt="Donate"></a>
 </p>
 
 ---
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/crsxmilitaru/pictag/preview.png" alt="PicTag Preview" style="max-width: 100%; max-height: 500px; width: auto; height: auto; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 4px 10px rgba(0,0,0,0.25);">
+  <img src="./preview.png" alt="PicTag Preview" style="max-width: 100%; max-height: 500px; width: auto; height: auto; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 4px 10px rgba(0,0,0,0.25);">
 </p>
 
 ## ✨ Features
