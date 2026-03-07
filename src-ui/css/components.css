@@ -1,0 +1,389 @@
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    transition: transform var(--anim-normal), box-shadow var(--anim-normal), opacity var(--anim-normal), filter var(--anim-normal);
+}
+
+.card:hover:not(.disabled) {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.card.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    filter: grayscale(0.5);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1em;
+    font-weight: 600;
+    user-select: none;
+}
+
+.collapse-icon {
+    transition: transform var(--anim-normal);
+    font-size: 0.8em;
+    color: var(--text-secondary);
+}
+
+.collapse-icon.collapsed {
+    transform: rotate(-90deg);
+}
+
+.card-content {
+    margin-top: 16px;
+    transition: all var(--anim-normal);
+}
+
+.card-content.collapsed {
+    display: none;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    margin: 0;
+    appearance: none;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: inline-grid;
+    place-content: center;
+    transition: background var(--anim-fast), border-color var(--anim-fast), box-shadow var(--anim-fast), transform var(--anim-fast);
+    cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"]::after {
+    content: "";
+    width: 9px;
+    height: 5px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg);
+    opacity: 0;
+    transition: opacity var(--anim-fast);
+}
+
+.checkbox-row input[type="checkbox"]:hover {
+    border-color: var(--primary);
+}
+
+.checkbox-row input[type="checkbox"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.checkbox-row input[type="checkbox"]:checked {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.checkbox-row input[type="checkbox"]:checked::after {
+    opacity: 1;
+}
+
+.checkbox-row input[type="checkbox"]:active {
+    transform: scale(0.95);
+}
+
+.checkbox-label {
+    font-size: 0.9em;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: none;
+    letter-spacing: 0;
+    user-select: none;
+}
+
+input,
+select,
+textarea {
+    height: 42px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0 16px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.95em;
+    transition: background var(--anim-fast), border-color var(--anim-fast), box-shadow var(--anim-fast);
+    display: flex;
+    align-items: center;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+input::placeholder {
+    color: var(--text-secondary);
+}
+
+.input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.custom-dropdown {
+    position: relative;
+    flex: 1;
+}
+
+.dropdown-trigger {
+    height: 42px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: border-color var(--anim-fast);
+}
+
+.dropdown-trigger:hover {
+    border-color: var(--primary);
+}
+
+.dropdown-trigger.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+}
+
+.dropdown-trigger.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.dropdown-options {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #2c2c2c;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    animation: slideDown var(--anim-fast) forwards;
+}
+
+.dropdown-options.show {
+    display: block;
+}
+
+.dropdown-option {
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background var(--anim-fast);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95em;
+}
+
+.dropdown-option:hover {
+    background: var(--bg-input);
+    color: var(--primary);
+}
+
+.dropdown-option.selected {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+button {
+    height: 42px;
+    padding: 0 24px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--anim-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.btn-small {
+    height: 28px;
+    padding: 0 12px;
+    font-size: 0.85em;
+    border-radius: var(--radius-sm);
+}
+
+button:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(0.2);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    padding: 0 16px;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    border-color: var(--primary);
+    background: var(--bg-card);
+}
+
+.btn-success {
+    background: var(--success);
+    color: white;
+    width: 100%;
+    padding: 0 24px;
+}
+
+.btn-success:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.btn-error {
+    background: var(--error);
+    color: white;
+}
+
+.btn-error:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.action-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.action-bar .btn-primary {
+    flex: 1;
+}
+
+.results-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.results-count {
+    display: inline-block;
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    font-weight: 500;
+    background: var(--bg-input);
+    padding: 6px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+}
+
+.prompt-section {
+    margin-top: 12px;
+}
+
+.prompt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.prompt-header label {
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.prompt-content {
+    transition: all var(--anim-normal);
+}
+
+.prompt-content.collapsed {
+    display: none;
+}
+
+.prompt-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.prompt-footer button {
+    padding: 0 24px;
+}
+
+.analyze-textarea {
+    min-height: 180px;
+    padding-top: 12px;
+    resize: none;
+    width: 100%;
+}
+

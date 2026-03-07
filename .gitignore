@@ -1,0 +1,27 @@
+# Rust
+/target
+*.exe
+*.pdb
+
+# Node.js
+node_modules/
+dist/
+dist-tauri/
+
+# Environment files
+.env
+.env*
+!.env.example
+output.txt
+
+# OS Files
+.DS_Store
+Thumbs.db
+*.log
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/tasks.json

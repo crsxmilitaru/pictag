@@ -1,0 +1,59 @@
+{
+  "productName": "PicTag",
+  "version": "1.0.0",
+  "identifier": "com.pictag.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build:frontend",
+    "frontendDist": "dist"
+  },
+  "app": {
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' asset: http://asset.localhost data:; connect-src 'self' http://localhost:* http://127.0.0.1:* ipc: http://ipc.localhost",
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "**/*"
+        ]
+      }
+    },
+    "windows": [
+      {
+        "title": "PicTag - Local AI image renamer and organizer",
+        "width": 700,
+        "height": 850,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "decorations": false,
+        "transparent": true
+      }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "copyright": "Copyright 2026 PicTag",
+    "shortDescription": "Local AI image renamer and organizer",
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/crsxmilitaru/pictag/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDg4NEREQjlCNDA4QzkzOEEKUldTS2s0eEFtOXROaUQ4TDQrTWFJVm1oQ2JwQzM1MzRzazZ5UlFEVEV5dlI4aWRiVW1LSk9OUWcK"
+    }
+  }
+}

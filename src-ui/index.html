@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PicTag</title>
+    <link rel="icon" type="image/icon" href="icon.ico">
+</head>
+
+<body spellcheck="false">
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-check-circle toast-icon"></i>
+        <span class="toast-message"></span>
+    </div>
+
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="modalTitle">Confirm Action</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                Are you sure you want to perform this action?
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" id="modalConfirmBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+    <div id="app-root">
+        <div data-tauri-drag-region class="titlebar">
+            <div class="titlebar-drag-region" data-tauri-drag-region id="titlebar-drag-region">
+                <img src="icon.ico" alt="Logo" class="titlebar-icon" data-tauri-drag-region>
+                <span class="titlebar-title" data-tauri-drag-region>PicTag</span>
+            </div>
+            <div class="titlebar-controls">
+                <div class="titlebar-button" id="titlebar-minimize">
+                    <i class="fa-solid fa-minus"></i>
+                </div>
+                <div class="titlebar-button" id="titlebar-maximize">
+                    <i class="fa-regular fa-square"></i>
+                </div>
+                <div class="titlebar-button close" id="titlebar-close">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="card">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Configuration</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down collapse-icon"></i>
+                </div>
+                <div class="card-content" id="configContent">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ollama URL</label>
+                            <input type="text" id="ollamaUrl" value="http://localhost:11434">
+                        </div>
+                        <div class="form-group">
+                            <label>Vision Model</label>
+                            <div class="input-group">
+                                <div class="custom-dropdown" id="modelDropdown">
+                                    <div class="dropdown-trigger" onclick="toggleDropdown()">
+                                        <span id="selectedModel">Select a model...</span>
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </div>
+                                    <div class="dropdown-options" id="dropdownOptions"></div>
+                                    <input type="hidden" id="modelSelect" value="">
+                                </div>
+                                <button class="btn-secondary" onclick="loadModels()">
+                                    <span id="refreshIcon"><i class="fa-solid fa-rotate"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group prompt-section">
+                        <div class="prompt-header" onclick="togglePrompt()">
+                            <label>
+                                <i class="fa-solid fa-chevron-down collapse-icon collapsed" id="promptCollapseIcon"></i>
+                                Analysis Prompt
+                            </label>
+                        </div>
+                        <div class="prompt-content collapsed" id="promptContent">
+                            <textarea id="analyzePrompt" class="analyze-textarea" spellcheck="false"></textarea>
+                            <div class="prompt-footer">
+                                <button class="btn-secondary" onclick="restorePrompt(event)">
+                                    <i class="fa-solid fa-rotate-left"></i> Restore Default
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title">
+                        <i class="fa-solid fa-folder-tree"></i>
+                        <span>Source Selection</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down collapse-icon"></i>
+                </div>
+                <div class="card-content">
+                    <div class="form-group">
+                        <label>Source Folder</label>
+                        <div class="action-bar">
+                            <input type="text" id="folderPath" placeholder="Select a folder..."
+                                style="max-width: 400px; flex: 1;">
+                            <button class="btn-secondary" onclick="pickFolder()">
+                                <i class="fa-solid fa-folder-open"></i> Browse
+                            </button>
+                            <button id="scanBtn" class="btn-primary" onclick="scanFolder()" style="max-width: 200px;"
+                                disabled>
+                                <i class="fa-solid fa-magnifying-glass"></i> Scan
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label class="checkbox-row">
+                            <input type="checkbox" id="recursiveScan">
+                            <span class="checkbox-label">Include subfolders</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id="imagesCard" class="card disabled">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title">
+                        <i class="fa-solid fa-images"></i>
+                        <span>Images</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down collapse-icon collapsed"></i>
+                </div>
+                <div class="card-content collapsed">
+                    <div class="image-grid" id="imageGrid"></div>
+                    <div class="results-footer">
+                        <span class="results-count" id="resultsCount">0 images</span>
+                    </div>
+                </div>
+            </div>
+            <div id="processingCard" class="card disabled">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Processing Controls</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down collapse-icon collapsed"></i>
+                </div>
+                <div class="card-content collapsed">
+                    <div class="processing-actions">
+                        <button id="processBtn" class="btn-success" onclick="generateNames()"
+                            style="margin-bottom: 20px; flex: 2;" disabled>
+                            <span id="processIcon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                            <span id="processText">Generate Names</span>
+                        </button>
+                        <button id="skipProcessingBtn" class="btn-secondary" onclick="skipProcessing()"
+                            style="margin-bottom: 20px; flex: 1;" disabled>
+                            <span id="skipProcessingIcon"><i class="fa-solid fa-forward"></i></span>
+                            <span id="skipProcessingText">Keep Current Names</span>
+                        </button>
+                        <button id="stopBtn" class="btn-error" onclick="stopRecognition()"
+                            style="margin-bottom: 20px; flex: 1; display: none;">
+                            <i class="fa-solid fa-stop"></i> Stop
+                        </button>
+                        <button id="applyBtn" class="btn-primary" onclick="applyChanges()"
+                            style="margin-bottom: 20px; flex: 1; display: none;">
+                            <span id="applyIcon"><i class="fa-solid fa-check"></i></span>
+                            <span id="applyText">Apply Changes</span>
+                        </button>
+                    </div>
+
+                    <div id="stats" class="stats hidden">
+                        <div class="stat">
+                            <div class="stat-value" id="successCount">0</div>
+                            <div class="stat-label">Successful</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="errorCount">0</div>
+                            <div class="stat-label">Failed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="totalCount">0</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="organizeCard" class="card disabled">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title">
+                        <i class="fa-solid fa-folder-plus"></i>
+                        <span>Organize</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down collapse-icon collapsed"></i>
+                </div>
+                <div class="card-content collapsed">
+                    <div class="organize-intro">
+                        <span class="organize-eyebrow">Choose a strategy</span>
+                        <p>Pick how these files should be grouped, then review the options for that mode.</p>
+                    </div>
+                    <div class="organize-mode-grid">
+                        <button id="organizeModeImagesBtn" class="organize-mode" onclick="selectOrganizeMode('single')"
+                            disabled>
+                            <span class="organize-mode-icon"><i class="fa-solid fa-images"></i></span>
+                            <span class="organize-mode-title">Images Folder</span>
+                            <span class="organize-mode-copy">Move everything into one Images folder.</span>
+                        </button>
+                        <button id="organizeModeTimelineBtn" class="organize-mode" onclick="selectOrganizeMode('timeline')"
+                            disabled>
+                            <span class="organize-mode-icon"><i class="fa-solid fa-calendar-days"></i></span>
+                            <span class="organize-mode-title">Timeline</span>
+                            <span class="organize-mode-copy">Split by year, month, or nested year/month folders.</span>
+                        </button>
+                        <button id="organizeModeTagsBtn" class="organize-mode" onclick="selectOrganizeMode('tags')"
+                            disabled>
+                            <span class="organize-mode-icon"><i class="fa-solid fa-tags"></i></span>
+                            <span class="organize-mode-title">Tags</span>
+                            <span class="organize-mode-copy">Create folders from repeated words in filenames.</span>
+                        </button>
+                    </div>
+                    <div id="organizeModeEmpty" class="organize-mode-empty">
+                        Choose a mode above to reveal its options.
+                    </div>
+                    <div id="organizeSinglePanel" class="organize-panel">
+                        <div class="organize-section">
+                            <div class="organize-section-title">
+                                <i class="fa-solid fa-layer-group"></i>
+                                <span>All in Images Folder</span>
+                            </div>
+                            <div class="organize-info">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>Keep the structure simple and move every file into one Images folder.</span>
+                            </div>
+                            <div class="organize-actions">
+                                <button id="organizeImagesBtn" class="btn-primary" onclick="organizeAllImages()"
+                                    style="flex: 1;" disabled>
+                                    <span id="organizeImagesIcon"><i class="fa-solid fa-images"></i></span>
+                                    <span id="organizeImagesText">Move to Images</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="organizeTimelinePanel" class="organize-panel">
+                        <div class="organize-section">
+                            <div class="organize-section-title">
+                                <i class="fa-solid fa-calendar-days"></i>
+                                <span>Timeline Options</span>
+                            </div>
+                            <div class="organize-info">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>Group by modified date using compact year or month-based folders.</span>
+                            </div>
+                            <div class="timeline-option-group">
+                                <button id="timelineYearBtn" class="timeline-option" onclick="selectTimelineGrouping('year')"
+                                    disabled>
+                                    <span class="timeline-option-title">Years</span>
+                                    <span class="timeline-option-copy">Example: 2026</span>
+                                </button>
+                                <button id="timelineMonthBtn" class="timeline-option" onclick="selectTimelineGrouping('month')"
+                                    disabled>
+                                    <span class="timeline-option-title">Months</span>
+                                    <span class="timeline-option-copy">Example: 2026-03</span>
+                                </button>
+                                <button id="timelineNestedBtn" class="timeline-option"
+                                    onclick="selectTimelineGrouping('year_month')" disabled>
+                                    <span class="timeline-option-title">Year / Month</span>
+                                    <span class="timeline-option-copy">Example: 2026/03</span>
+                                </button>
+                            </div>
+                            <div class="organize-actions">
+                                <button id="organizeTimelineBtn" class="btn-primary" onclick="organizeByTimeline()"
+                                    style="flex: 1;" disabled>
+                                    <span id="organizeTimelineIcon"><i class="fa-solid fa-calendar-plus"></i></span>
+                                    <span id="organizeTimelineText">Organize by Timeline</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="organizeTagsPanel" class="organize-panel">
+                        <div class="organize-section">
+                            <div class="organize-section-title">
+                                <i class="fa-solid fa-tags"></i>
+                                <span>By Tags</span>
+                            </div>
+                            <div class="organize-info">
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>Select detected tags to create folders and move matching images into them.</span>
+                            </div>
+                            <div id="tagList" class="tag-list"></div>
+                            <div class="organize-actions">
+                                <button id="organizeByTagsBtn" class="btn-primary" onclick="organizeByTags()"
+                                    style="flex: 1;" disabled>
+                                    <span id="organizeByTagsIcon"><i class="fa-solid fa-folder-plus"></i></span>
+                                    <span id="organizeByTagsText">Organize by Tags</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="organize-footer">
+                        <button id="skipOrganizeBtn" class="btn-secondary" onclick="skipOrganize()" disabled>Skip</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>About</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-down collapse-icon"></i>
+                </div>
+                <div class="card-content">
+                    <p style="font-size: 0.9em; color: var(--text-secondary); margin-bottom: 12px; user-select: none;">
+                        PicTag is an AI-powered tool for smart image organization.</p>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn-secondary" onclick="openGitHub()" style="width: auto;">
+                            <i class="fa-brands fa-github"></i> View on GitHub
+                        </button>
+                        <button class="btn-secondary" id="updateBtn" onclick="checkForUpdates()" style="width: auto;">
+                            <span id="updateIcon"><i class="fa-solid fa-rotate"></i></span>
+                            <span id="updateText">Check for Updates</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+{
+  "name": "pictag",
+  "version": "1.0.0",
+  "author": "Cristian Militaru",
+  "description": "Local AI image renamer and organizer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crsxmilitaru/pictag"
+  },
+  "license": "ISC",
+  "scripts": {
+    "dev": "vite --host",
+    "build:frontend": "vite build",
+    "tauri": "tauri",
+    "start": "tauri dev",
+    "build": "tauri build",
+    "bump": "node -e \"const v=process.argv[1]; if(!v){console.error('Usage: npm run bump <version>'); process.exit(1);} require('child_process').execSync('npm version '+v+' --no-git-tag-version', {stdio:'inherit'}); const fs=require('fs'); const t='tauri.conf.json'; const d=JSON.parse(fs.readFileSync(t,'utf8')); d.version=v; fs.writeFileSync(t,JSON.stringify(d,null,2)+'\\r\\n'); require('child_process').execSync('git add package.json package-lock.json ' + t); require('child_process').execSync('git commit -m \\\"v' + v + '\\\"'); console.log('Tauri app version updated and committed to ' + v);\"",
+    "release:check-versions": "node -e \"const fs = require('fs'); const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8')).version; const tauri = JSON.parse(fs.readFileSync('tauri.conf.json', 'utf8')).version; if (pkg !== tauri) { console.error(`Version mismatch: package.json=${pkg}, tauri.conf.json=${tauri}`); process.exit(1); } console.log(`Version OK: ${pkg}`);\"",
+    "release": "npm run release:check-versions && node -e \"const { execSync } = require('child_process'); const fs = require('fs'); const v = JSON.parse(fs.readFileSync('package.json', 'utf8')).version; execSync('git push', { stdio: 'inherit' }); execSync('git tag v' + v, { stdio: 'inherit' }); execSync('git push origin v' + v, { stdio: 'inherit' });\""
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-process": "^2",
+    "@tauri-apps/plugin-updater": "^2",
+    "@fortawesome/fontawesome-free": "^7.2.0"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "vite": "^7.3.1"
+  }
+}
