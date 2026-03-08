@@ -5,6 +5,7 @@ import '../css/images.css';
 import '../css/feedback.css';
 
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
+import { getVersion } from '@tauri-apps/api/app';
 import { initUI } from './ui.js';
 import { initAPI } from './api.js';
 
@@ -188,6 +189,11 @@ document.addEventListener('click', (e) => {
 });
 
 // Initialization
+getVersion().then(v => {
+    const versionEl = document.getElementById('appVersion');
+    if (versionEl) versionEl.textContent = `v${v}`;
+});
+
 const savedUrl = localStorage.getItem('ollamaUrl');
 if (savedUrl) el.ollamaUrl.value = savedUrl;
 
