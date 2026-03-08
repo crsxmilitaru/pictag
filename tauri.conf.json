@@ -1,6 +1,6 @@
 {
   "productName": "PicTag",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "identifier": "com.pictag.app",
   "build": {
     "beforeDevCommand": "npm run dev",
