@@ -24,7 +24,7 @@
                 Are you sure you want to perform this action?
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn-secondary" id="modalCancelBtn">Cancel</button>
                 <button class="btn-primary" id="modalConfirmBtn">Confirm</button>
             </div>
         </div>
@@ -49,7 +49,7 @@
         </div>
         <div class="container">
             <div class="card">
-                <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-header">
                     <div class="card-title">
                         <i class="fa-solid fa-gear"></i>
                         <span>Configuration</span>
@@ -66,21 +66,21 @@
                             <label>Vision Model</label>
                             <div class="input-group">
                                 <div class="custom-dropdown" id="modelDropdown">
-                                    <div class="dropdown-trigger" onclick="toggleDropdown()">
+                                    <div class="dropdown-trigger" id="dropdownTrigger">
                                         <span id="selectedModel">Select a model...</span>
                                         <i class="fa-solid fa-chevron-down"></i>
                                     </div>
                                     <div class="dropdown-options" id="dropdownOptions"></div>
                                     <input type="hidden" id="modelSelect" value="">
                                 </div>
-                                <button class="btn-secondary" onclick="loadModels()">
+                                <button class="btn-secondary" id="loadModelsBtn">
                                     <span id="refreshIcon"><i class="fa-solid fa-rotate"></i></span>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="form-group prompt-section">
-                        <div class="prompt-header" onclick="togglePrompt()">
+                        <div class="prompt-header" id="promptHeader">
                             <label>
                                 <i class="fa-solid fa-chevron-down collapse-icon collapsed" id="promptCollapseIcon"></i>
                                 Analysis Prompt
@@ -89,7 +89,7 @@
                         <div class="prompt-content collapsed" id="promptContent">
                             <textarea id="analyzePrompt" class="analyze-textarea" spellcheck="false"></textarea>
                             <div class="prompt-footer">
-                                <button class="btn-secondary" onclick="restorePrompt(event)">
+                                <button class="btn-secondary" id="restorePromptBtn">
                                     <i class="fa-solid fa-rotate-left"></i> Restore Default
                                 </button>
                             </div>
@@ -98,7 +98,7 @@
                 </div>
             </div>
             <div class="card">
-                <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-header">
                     <div class="card-title">
                         <i class="fa-solid fa-folder-tree"></i>
                         <span>Source Selection</span>
@@ -111,10 +111,10 @@
                         <div class="action-bar">
                             <input type="text" id="folderPath" placeholder="Select a folder..."
                                 style="max-width: 400px; flex: 1;">
-                            <button class="btn-secondary" onclick="pickFolder()">
+                            <button class="btn-secondary" id="pickFolderBtn">
                                 <i class="fa-solid fa-folder-open"></i> Browse
                             </button>
-                            <button id="scanBtn" class="btn-primary" onclick="scanFolder()" style="max-width: 200px;"
+                            <button id="scanBtn" class="btn-primary" style="max-width: 200px;"
                                 disabled>
                                 <i class="fa-solid fa-magnifying-glass"></i> Scan
                             </button>
@@ -129,7 +129,7 @@
                 </div>
             </div>
             <div id="imagesCard" class="card disabled">
-                <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-header">
                     <div class="card-title">
                         <i class="fa-solid fa-images"></i>
                         <span>Images</span>
@@ -144,7 +144,7 @@
                 </div>
             </div>
             <div id="processingCard" class="card disabled">
-                <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-header">
                     <div class="card-title">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                         <span>Processing Controls</span>
@@ -153,21 +153,21 @@
                 </div>
                 <div class="card-content collapsed">
                     <div class="processing-actions">
-                        <button id="processBtn" class="btn-success" onclick="generateNames()"
+                        <button id="processBtn" class="btn-success"
                             style="margin-bottom: 20px; flex: 2;" disabled>
                             <span id="processIcon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                             <span id="processText">Generate Names</span>
                         </button>
-                        <button id="skipProcessingBtn" class="btn-secondary" onclick="skipProcessing()"
+                        <button id="skipProcessingBtn" class="btn-secondary"
                             style="margin-bottom: 20px; flex: 1;" disabled>
                             <span id="skipProcessingIcon"><i class="fa-solid fa-forward"></i></span>
                             <span id="skipProcessingText">Keep Current Names</span>
                         </button>
-                        <button id="stopBtn" class="btn-error" onclick="stopRecognition()"
+                        <button id="stopBtn" class="btn-error"
                             style="margin-bottom: 20px; flex: 1; display: none;">
                             <i class="fa-solid fa-stop"></i> Stop
                         </button>
-                        <button id="applyBtn" class="btn-primary" onclick="applyChanges()"
+                        <button id="applyBtn" class="btn-primary"
                             style="margin-bottom: 20px; flex: 1; display: none;">
                             <span id="applyIcon"><i class="fa-solid fa-check"></i></span>
                             <span id="applyText">Apply Changes</span>
@@ -191,7 +191,7 @@
                 </div>
             </div>
             <div id="organizeCard" class="card disabled">
-                <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-header">
                     <div class="card-title">
                         <i class="fa-solid fa-folder-plus"></i>
                         <span>Organize</span>
@@ -204,19 +204,19 @@
                         <p>Pick how these files should be grouped, then review the options for that mode.</p>
                     </div>
                     <div class="organize-mode-grid">
-                        <button id="organizeModeImagesBtn" class="organize-mode" onclick="selectOrganizeMode('single')"
+                        <button id="organizeModeImagesBtn" class="organize-mode"
                             disabled>
                             <span class="organize-mode-icon"><i class="fa-solid fa-images"></i></span>
                             <span class="organize-mode-title">Images Folder</span>
                             <span class="organize-mode-copy">Move everything into one Images folder.</span>
                         </button>
-                        <button id="organizeModeTimelineBtn" class="organize-mode" onclick="selectOrganizeMode('timeline')"
+                        <button id="organizeModeTimelineBtn" class="organize-mode"
                             disabled>
                             <span class="organize-mode-icon"><i class="fa-solid fa-calendar-days"></i></span>
                             <span class="organize-mode-title">Timeline</span>
                             <span class="organize-mode-copy">Split by year, month, or nested year/month folders.</span>
                         </button>
-                        <button id="organizeModeTagsBtn" class="organize-mode" onclick="selectOrganizeMode('tags')"
+                        <button id="organizeModeTagsBtn" class="organize-mode"
                             disabled>
                             <span class="organize-mode-icon"><i class="fa-solid fa-tags"></i></span>
                             <span class="organize-mode-title">Tags</span>
@@ -237,7 +237,7 @@
                                 <span>Keep the structure simple and move every file into one Images folder.</span>
                             </div>
                             <div class="organize-actions">
-                                <button id="organizeImagesBtn" class="btn-primary" onclick="organizeAllImages()"
+                                <button id="organizeImagesBtn" class="btn-primary"
                                     style="flex: 1;" disabled>
                                     <span id="organizeImagesIcon"><i class="fa-solid fa-images"></i></span>
                                     <span id="organizeImagesText">Move to Images</span>
@@ -256,24 +256,24 @@
                                 <span>Group by modified date using compact year or month-based folders.</span>
                             </div>
                             <div class="timeline-option-group">
-                                <button id="timelineYearBtn" class="timeline-option" onclick="selectTimelineGrouping('year')"
+                                <button id="timelineYearBtn" class="timeline-option"
                                     disabled>
                                     <span class="timeline-option-title">Years</span>
                                     <span class="timeline-option-copy">Example: 2026</span>
                                 </button>
-                                <button id="timelineMonthBtn" class="timeline-option" onclick="selectTimelineGrouping('month')"
+                                <button id="timelineMonthBtn" class="timeline-option"
                                     disabled>
                                     <span class="timeline-option-title">Months</span>
                                     <span class="timeline-option-copy">Example: 2026-03</span>
                                 </button>
                                 <button id="timelineNestedBtn" class="timeline-option"
-                                    onclick="selectTimelineGrouping('year_month')" disabled>
+                                    disabled>
                                     <span class="timeline-option-title">Year / Month</span>
                                     <span class="timeline-option-copy">Example: 2026/03</span>
                                 </button>
                             </div>
                             <div class="organize-actions">
-                                <button id="organizeTimelineBtn" class="btn-primary" onclick="organizeByTimeline()"
+                                <button id="organizeTimelineBtn" class="btn-primary"
                                     style="flex: 1;" disabled>
                                     <span id="organizeTimelineIcon"><i class="fa-solid fa-calendar-plus"></i></span>
                                     <span id="organizeTimelineText">Organize by Timeline</span>
@@ -293,7 +293,7 @@
                             </div>
                             <div id="tagList" class="tag-list"></div>
                             <div class="organize-actions">
-                                <button id="organizeByTagsBtn" class="btn-primary" onclick="organizeByTags()"
+                                <button id="organizeByTagsBtn" class="btn-primary"
                                     style="flex: 1;" disabled>
                                     <span id="organizeByTagsIcon"><i class="fa-solid fa-folder-plus"></i></span>
                                     <span id="organizeByTagsText">Organize by Tags</span>
@@ -302,12 +302,12 @@
                         </div>
                     </div>
                     <div class="organize-footer">
-                        <button id="skipOrganizeBtn" class="btn-secondary" onclick="skipOrganize()" disabled>Skip</button>
+                        <button id="skipOrganizeBtn" class="btn-secondary" disabled>Skip</button>
                     </div>
                 </div>
             </div>
             <div class="card">
-                <div class="card-header" onclick="toggleCard(this)">
+                <div class="card-header">
                     <div class="card-title">
                         <i class="fa-solid fa-circle-info"></i>
                         <span>About</span>
@@ -318,10 +318,10 @@
                     <p style="font-size: 0.9em; color: var(--text-secondary); margin-bottom: 12px; user-select: none;">
                         PicTag is an AI-powered tool for smart image organization.</p>
                     <div style="display: flex; gap: 12px;">
-                        <button class="btn-secondary" onclick="openGitHub()" style="width: auto;">
+                        <button class="btn-secondary" id="openGithubBtn" style="width: auto;">
                             <i class="fa-brands fa-github"></i> View on GitHub
                         </button>
-                        <button class="btn-secondary" id="updateBtn" onclick="checkForUpdates()" style="width: auto;">
+                        <button class="btn-secondary" id="updateBtn" style="width: auto;">
                             <span id="updateIcon"><i class="fa-solid fa-rotate"></i></span>
                             <span id="updateText">Check for Updates</span>
                         </button>

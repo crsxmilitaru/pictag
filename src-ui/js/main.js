@@ -115,40 +115,50 @@ const state = {
 const ui = initUI(el);
 const api = initAPI(el, state, ui);
 
-// Expose functions to onclick handlers in HTML
 const DEFAULT_PROMPT = "Analyze the image and generate a concise, descriptive filename using 2 to 5 keywords joined by underscores. Strictly output only the filename. Do not explain, do not add file extensions, and do not use punctuation other than underscores. Examples: 'red_sports_car_side_view', 'golden_retriever_playing_park', 'sunset_over_mountains'";
 
-Object.assign(window, {
-    toggleCard: ui.toggleCard,
-    toggleDropdown: ui.toggleDropdown,
-    closeModal: ui.closeModal,
-    pickFolder: api.pickFolder,
-    scanFolder: api.scanFolder,
-    generateNames: api.generateNames,
-    stopRecognition: api.stopRecognition,
-    applyChanges: api.applyChanges,
-    skipProcessing: api.skipProcessing,
-    selectOrganizeMode: api.selectOrganizeMode,
-    selectTimelineGrouping: api.selectTimelineGrouping,
-    organizeByTags: api.organizeByTags,
-    organizeAllImages: api.organizeAllImages,
-    organizeByTimeline: api.organizeByTimeline,
-    loadModels: api.loadModels,
-    checkForUpdates: api.checkForUpdates,
-    skipOrganize: api.skipOrganize,
-    openGitHub: api.openGitHub,
-    restorePrompt: (e) => {
-        if (e) e.stopPropagation();
-        el.analyzePrompt.value = DEFAULT_PROMPT;
-        localStorage.setItem('analyzePrompt', DEFAULT_PROMPT);
-    },
-    togglePrompt: () => {
-        const content = $('promptContent', HTMLElement);
-        const icon = $('promptCollapseIcon', HTMLElement);
-        const isCollapsed = content.classList.toggle('collapsed');
-        icon.classList.toggle('collapsed', isCollapsed);
-    }
+document.getElementById('modalCancelBtn')?.addEventListener('click', ui.closeModal);
+document.getElementById('dropdownTrigger')?.addEventListener('click', ui.toggleDropdown);
+document.getElementById('loadModelsBtn')?.addEventListener('click', api.loadModels);
+document.getElementById('promptHeader')?.addEventListener('click', togglePrompt);
+document.getElementById('restorePromptBtn')?.addEventListener('click', restorePrompt);
+document.getElementById('pickFolderBtn')?.addEventListener('click', api.pickFolder);
+document.getElementById('scanBtn')?.addEventListener('click', api.scanFolder);
+document.getElementById('processBtn')?.addEventListener('click', api.generateNames);
+document.getElementById('skipProcessingBtn')?.addEventListener('click', api.skipProcessing);
+document.getElementById('stopBtn')?.addEventListener('click', api.stopRecognition);
+document.getElementById('applyBtn')?.addEventListener('click', api.applyChanges);
+
+document.getElementById('organizeModeImagesBtn')?.addEventListener('click', () => api.selectOrganizeMode('single'));
+document.getElementById('organizeModeTimelineBtn')?.addEventListener('click', () => api.selectOrganizeMode('timeline'));
+document.getElementById('organizeModeTagsBtn')?.addEventListener('click', () => api.selectOrganizeMode('tags'));
+
+document.getElementById('organizeImagesBtn')?.addEventListener('click', api.organizeAllImages);
+document.getElementById('timelineYearBtn')?.addEventListener('click', () => api.selectTimelineGrouping('year'));
+document.getElementById('timelineMonthBtn')?.addEventListener('click', () => api.selectTimelineGrouping('month'));
+document.getElementById('timelineNestedBtn')?.addEventListener('click', () => api.selectTimelineGrouping('year_month'));
+document.getElementById('organizeTimelineBtn')?.addEventListener('click', api.organizeByTimeline);
+document.getElementById('organizeByTagsBtn')?.addEventListener('click', api.organizeByTags);
+document.getElementById('skipOrganizeBtn')?.addEventListener('click', api.skipOrganize);
+document.getElementById('openGithubBtn')?.addEventListener('click', api.openGitHub);
+document.getElementById('updateBtn')?.addEventListener('click', api.checkForUpdates);
+
+document.querySelectorAll('.card-header').forEach(header => {
+    header.addEventListener('click', () => ui.toggleCard(header));
 });
+
+function restorePrompt(e) {
+    if (e) e.stopPropagation();
+    el.analyzePrompt.value = DEFAULT_PROMPT;
+    localStorage.setItem('analyzePrompt', DEFAULT_PROMPT);
+}
+
+function togglePrompt() {
+    const content = document.getElementById('promptContent');
+    const icon = document.getElementById('promptCollapseIcon');
+    const isCollapsed = content.classList.toggle('collapsed');
+    icon.classList.toggle('collapsed', isCollapsed);
+}
 
 // State helpers exposed for UI
 function updateScanBtnState() {
