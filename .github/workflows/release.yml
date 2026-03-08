@@ -60,5 +60,105 @@ jobs:
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: false
           prerelease: false
-          includeUpdaterJson: true
           args: ${{ matrix.args }}
+
+  updater:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate latest.json for updater
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          REPO="${GITHUB_REPOSITORY}"
+          RELEASE_URL="https://github.com/${REPO}/releases/download/${TAG}"
+          PUB_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          NOTES="See the assets to download and install this version."
+
+          # Wait a moment for all assets to be finalized
+          sleep 5
+
+          # Fetch release assets list
+          ASSETS=$(gh api "repos/${REPO}/releases/tags/${TAG}" --jq '.assets[].name')
+
+          # Helper: download .sig file content
+          get_sig() {
+            local sig_file="$1"
+            gh api "repos/${REPO}/releases/tags/${TAG}" \
+              --jq ".assets[] | select(.name == \"${sig_file}\") | .url" \
+              | xargs -I{} curl -sL -H "Accept: application/octet-stream" -H "Authorization: token ${GITHUB_TOKEN}" "{}"
+          }
+
+          # Build platforms JSON
+          PLATFORMS="{}"
+
+          # Windows NSIS (.nsis.zip)
+          NSIS_FILE=$(echo "$ASSETS" | grep -i '\.nsis\.zip$' | head -1 || true)
+          if [ -n "$NSIS_FILE" ]; then
+            SIG=$(get_sig "${NSIS_FILE}.sig")
+            PLATFORMS=$(echo "$PLATFORMS" | jq \
+              --arg url "${RELEASE_URL}/${NSIS_FILE}" \
+              --arg sig "$SIG" \
+              '. + {"windows-x86_64": {"signature": $sig, "url": $url}}')
+          fi
+
+          # macOS aarch64 (.app.tar.gz with aarch64)
+          MAC_ARM_FILE=$(echo "$ASSETS" | grep -i 'aarch64\.app\.tar\.gz$' | head -1 || true)
+          if [ -n "$MAC_ARM_FILE" ]; then
+            SIG=$(get_sig "${MAC_ARM_FILE}.sig")
+            PLATFORMS=$(echo "$PLATFORMS" | jq \
+              --arg url "${RELEASE_URL}/${MAC_ARM_FILE}" \
+              --arg sig "$SIG" \
+              '. + {"darwin-aarch64": {"signature": $sig, "url": $url}}')
+          fi
+
+          # macOS x86_64 (.app.tar.gz with x64)
+          MAC_X64_FILE=$(echo "$ASSETS" | grep -i 'x64\.app\.tar\.gz$' | head -1 || true)
+          if [ -n "$MAC_X64_FILE" ]; then
+            SIG=$(get_sig "${MAC_X64_FILE}.sig")
+            PLATFORMS=$(echo "$PLATFORMS" | jq \
+              --arg url "${RELEASE_URL}/${MAC_X64_FILE}" \
+              --arg sig "$SIG" \
+              '. + {"darwin-x86_64": {"signature": $sig, "url": $url}}')
+          fi
+
+          # Linux (.AppImage.tar.gz)
+          LINUX_FILE=$(echo "$ASSETS" | grep -i '\.AppImage\.tar\.gz$' | head -1 || true)
+          if [ -n "$LINUX_FILE" ]; then
+            SIG=$(get_sig "${LINUX_FILE}.sig")
+            PLATFORMS=$(echo "$PLATFORMS" | jq \
+              --arg url "${RELEASE_URL}/${LINUX_FILE}" \
+              --arg sig "$SIG" \
+              '. + {"linux-x86_64": {"signature": $sig, "url": $url}}')
+          fi
+
+          # Build final latest.json
+          jq -n \
+            --arg version "$VERSION" \
+            --arg notes "$NOTES" \
+            --arg pub_date "$PUB_DATE" \
+            --argjson platforms "$PLATFORMS" \
+            '{version: $version, notes: $notes, pub_date: $pub_date, platforms: $platforms}' \
+            > latest.json
+
+          echo "Generated latest.json:"
+          cat latest.json
+
+          # Upload latest.json to the release (delete existing one first if present)
+          EXISTING=$(gh api "repos/${REPO}/releases/tags/${TAG}" --jq '.assets[] | select(.name == "latest.json") | .id' || true)
+          if [ -n "$EXISTING" ]; then
+            gh api -X DELETE "repos/${REPO}/releases/tags/${TAG}/assets/${EXISTING}" || true
+          fi
+
+          RELEASE_ID=$(gh api "repos/${REPO}/releases/tags/${TAG}" --jq '.id')
+          gh api \
+            --method POST \
+            -H "Content-Type: application/json" \
+            "https://uploads.github.com/repos/${REPO}/releases/${RELEASE_ID}/assets?name=latest.json" \
+            --input latest.json
